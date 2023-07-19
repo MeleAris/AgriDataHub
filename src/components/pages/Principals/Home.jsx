@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
 import Aside from '../../fragments/Aside';
 import Header from '../../fragments/Header';
 import PageHeader from '../../fragments/PageHeader';
 
 const Home = () => {
-    let url = "assets/media/svg/shapes/abstract-4.svg"
-    /* let url = "assets/media/svg/patterns/taieri.svg" */
+    //let url = "assets/media/svg/shapes/abstract-4.svg"
+    let url = "assets/media/svg/patterns/taieri.svg"
 
     const [data, setData] = useState([])
-    const navigate = useNavigate()
+    //const navigate = useNavigate()
 
     useEffect(() => {
 
         const fetchData = async () => {
-            let list = []
             try {
 
             } catch (err) {

@@ -1,6 +1,9 @@
+import axios from 'axios';
+import { saveAs } from 'file-saver';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 import makeId from '../../../IdGenerator';
 import Aside from '../../fragments/Aside';
 import Header from '../../fragments/Header';
@@ -30,12 +33,38 @@ const Categories = () => {
         }
     }
 
+    //impression
+    const convertJsonToExcel = (json, file) => {
+        // Créez un nouveau classeur
+        const workbook = XLSX.utils.book_new();
+
+        // Convertir le JSON en une feuille de calcul
+        const worksheet = XLSX.utils.json_to_sheet(json);
+
+        // Ajouter la feuille de calcul au classeur
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+        // Convertir le classeur en un fichier binaire
+        const excelBuffer = XLSX.write(workbook, { type: 'array' });
+
+        // Créer un objet Blob avec le fichier binaire
+        const data = new Blob([excelBuffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+
+        // Utiliser file-saver pour télécharger le fichier
+        saveAs(data, `${file}.xlsx`);
+    };
+
     //Affichage
     useEffect(() => {
-
-
-
-
+        axios.get("http://192.168.1.110:8000/api/polygone-stats/")
+            .then(response => {
+                setList(response.data)
+            })
+            .catch(error => {
+                console.log(error);
+            })
     }, []);
 
     const delet = (id) => {
@@ -110,7 +139,6 @@ const Categories = () => {
                                                     <h3 className="card-label">Liste de toute les catégories</h3>
                                                 </div>
                                             </div>
-
                                             <div className="card-body">
                                                 <table className="table table-separate table-head-custom">
                                                     <thead>
@@ -122,9 +150,9 @@ const Categories = () => {
                                                     </thead>
                                                     <tbody>
                                                         {
-                                                            list.map(cat => <tr key={cat.id}>
+                                                            list.map(cat => <tr key={cat.not_filled_count}>
                                                                 <th scope="row" >{list.findIndex(g => g.id === cat.id) + 1}</th>
-                                                                <td>{cat.nom}</td>
+                                                                <td>{cat.not_filled_count}</td>
                                                                 <td nowrap="nowrap">
                                                                     <div className="dropdown dropdown-inline">
                                                                         <a onClick={() => edit(cat.id)} className="btn btn-sm btn-clean btn-icon mr-2" title="Modifier">
@@ -159,12 +187,21 @@ const Categories = () => {
                                                                                 </svg>
                                                                             </span>
                                                                         </a>
+                                                                        <a onClick={() => convertJsonToExcel(list, "jesuistropfort")} className="btn btn-sm btn-clean btn-icon" title="Impression">
+                                                                            <span className="svg-icon svg-icon-md">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                                                    <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                                                                                        <rect x="0" y="0" width="24" height="24" />
+                                                                                        <path d="M6,8 L6,20.5 C6,21.3284271 6.67157288,22 7.5,22 L16.5,22 C17.3284271,22 18,21.3284271 18,20.5 L18,8 L6,8 Z" fill="#000000" fillRule="nonzero" />
+                                                                                        <path d="M14,4.5 L14,4 C14,3.44771525 13.5522847,3 13,3 L11,3 C10.4477153,3 10,3.44771525 10,4 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z" fill="#000000" opacity="0.3" />
+                                                                                    </g>
+                                                                                </svg>
+                                                                            </span>
+                                                                        </a>
                                                                     </div>
                                                                 </td>
-                                                            </tr>
-                                                            )
+                                                            </tr>)
                                                         }
-
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -177,7 +214,6 @@ const Categories = () => {
                 </div>
             </div>
         </div>
-
     );
 }
 

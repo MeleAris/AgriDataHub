@@ -1,4 +1,6 @@
+import axios from 'axios';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Aside from '../../fragments/Aside';
 import Header from '../../fragments/Header';
@@ -15,6 +17,17 @@ const Presentation = () => {
     const info = '#8950FC';
     const warning = '#FFA800';
     const danger = '#F64E60';
+
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        axios.get("http://192.168.1.110:8000/api/gender-stats/")
+            .then(response => {
+                setData(response.data);
+                console.log(response.data);
+            })
+            .catch(error => console.log(error));
+    }, []);
 
     const lineOptions = {
         series: [{
@@ -235,12 +248,12 @@ const Presentation = () => {
     };
 
     const pieOptions = {
-        series: [44, 55, 13, 43, 22],
+        series: [data[0].M, data[0].F],
         chart: {
             width: 380,
             type: 'pie',
         },
-        labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+        labels: ['M', 'F'],
         responsive: [{
             breakpoint: 480,
             options: {
@@ -252,7 +265,7 @@ const Presentation = () => {
                 }
             }
         }],
-        colors: [primary, success, warning, danger, info]
+        colors: [primary, success]
     };
 
     return (
@@ -288,7 +301,6 @@ const Presentation = () => {
                                         <div className="row">
                                             <Donut opt={donutOptions} id={"donut"} />
                                             <Pie opt={pieOptions} id={"pie"} />
-                                            <Lines opt={lineOptions2} id={"pie2"} />
                                         </div>
                                     </div>
                                 </div>
